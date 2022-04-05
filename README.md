@@ -8,7 +8,7 @@ In this tutorial, we show how to set up your own serverless Speech-to-Text trans
 
 Register for an [AWS](https://aws.amazon.com/account/) account. We will be using it to access AWS Lambda and API Gateway services either via the console or CLI.
 
-Sign up for [Picovoice Console](https://console.picovoice.ai/) using GitHub (or email) and to get your AccessKey for free. We will need an AccessKey to use Leopard Speech-to-Text engine.
+Sign up for [Picovoice Console](https://console.picovoice.ai/) using GitHub and to get your AccessKey for free. We will need an AccessKey to use Leopard Speech-to-Text engine.
 
 ## Estimated Cost
 
@@ -23,7 +23,9 @@ Estimate cost for your service: [API Gateway](https://calculator.aws/#/createCal
 
 ## Limitations
 
-API Gateway has a 29-second timeout and 10MB payload size limit. Lambda has a 15-minute timeout and a 6MB payload size limit. Considering the limitations, for this scenario the audio size must be less than 4.5MB (audio file is base64 encoded) and less than 2 minutes to transcribe successfully before a timeout occurs.
+API Gateway has a 29-second timeout and 10MB payload size limit. Lambda has a 15-minute timeout and a 6MB payload size limit. 
+
+Considering the lower bound limitations (29-second timeout and 6MB file size), the audio size must be less than 4.5MB (audio file is base64 encoded) and less than 2 minutes to transcribe successfully before a timeout occurs.
 
 ## High-Level Overview
 
@@ -37,71 +39,71 @@ API Gateway has a 29-second timeout and 10MB payload size limit. Lambda has a 15
 
 ### Setting up Lambda
 
-In AWS Console, go to `Lambda`, and go to `Functions` tab.
+1. In AWS Console, go to `Lambda`, and go to `Functions` tab.
 
-![Lambda Functions](./imgs/lambda_functions.png)
+    ![Lambda Functions](./imgs/lambda_functions.png)
 
-Press `Create a Function`. Then set the function name and set the runtime to Python 3.9.
+2. Press `Create a Function`. Then set the function name and set the runtime to Python 3.9.
 
-![Create Function](./imgs/create_function.gif)                                                        
+    ![Create Function](./imgs/create_function.gif)                                                        
 
-Download the zip file from the [GitHub repository](serverless_leopard.zip) which contains the Lambda handler ([source](serverless_leopard/lambda_function.py)) and packaged [pvleopard module](https://pypi.org/project/pvleopard/). 
+3. Download the zip file from the [GitHub repository](serverless_leopard.zip) which contains the Lambda handler ([source](serverless_leopard/lambda_function.py)) and packaged [pvleopard module](https://pypi.org/project/pvleopard/). 
 
-The Lambda handler does the following:
-   1. Gets and parses the form-data from the request.
-   2. Saves the audio data into a temporary file.
-   3. Transcribes and cleans up the temporary file.
-   4. Returns the transcription
+    The Lambda handler does the following:
+      1. Gets and parses the form-data from the request.
+      2. Saves the audio data into a temporary file.
+      3. Transcribes and cleans up the temporary file.
+      4. Returns the transcription
 
-Press on `Upload from > .zip file` and upload the zip file.
+4. Press on `Upload from > .zip file` and upload the zip file.
 
-![Upload From](./imgs/upload_from.gif)
+    ![Upload From](./imgs/upload_from.gif)
 
-Once the function is uploaded, go to `Configurations > General configuration` tab. Press on `Edit`.
+5. Once the function is uploaded, go to `Configurations > General configuration` tab. Press on `Edit`.
 
-![General Config](./imgs/general_config.png)
+    ![General Config](./imgs/general_config.png)
 
-Set the memory limit to `512 MB` and timeout to `15 minutes` and press `Save`.
+6. Set the memory limit to `512 MB` and timeout to `15 minutes` and press `Save`.
 
-![Edit Config](./imgs/edit_config.png)
+    ![Edit Config](./imgs/edit_config.png)
 
-Go to `Environment variables` tab and press on `Edit`. 
+7. Go to `Environment variables` tab and press on `Edit`. 
 
-![Lambda Config](./imgs/lambda_config.png)
+    ![Lambda Config](./imgs/lambda_config.png)
 
-Add your `AccessKey` that you obtained from [Picovoice Console](https://console.picovoice.ai/) and press `Save`.
+8. Add your `AccessKey` that you obtained from [Picovoice Console](https://console.picovoice.ai/) and press `Save`.
 
-![Access Key](./imgs/access_key.png)
+    ![Access Key](./imgs/access_key.png)
 
-Press on `Copy ARN` (button located in the top right corner) and save your function ARN. We will need to set up API Gateway later. You may also come back later to copy your function ARN.
+9. Press on `Copy ARN` (button located in the top right corner) and save your function ARN. We will need to set up API Gateway later. You may also come back later to copy your function ARN.
 
-![Lambda ARN](./imgs/lambda_arn.png)
+    ![Lambda ARN](./imgs/lambda_arn.png)
 
 ### Setting up API Gateway
 
-In AWS Console, go to `API Gateway`, and go to `REST API` section. Press on `Build` to create a new Rest API.
+1. In AWS Console, go to `API Gateway`, and go to `REST API` section. Press on `Build` to create a new Rest API.
 
-![REST API](./imgs/gateway_rest.png)
+    ![REST API](./imgs/gateway_rest.png)
 
-Select `Rest` as the protocol, `New API`, and give a name to your API. Press `Create API` to create your API.
+2. Select `Rest` as the protocol, `New API`, and give a name to your API. Press `Create API` to create your API.
 
-![REST Protocol](./imgs/rest_protocol.png)
+    ![REST Protocol](./imgs/rest_protocol.png)
 
-Press `Actions > Create Method` and select `POST` as your method. Select `Lambda Function` as the integration type, tick on `Proxy Integration`, and copy your Lambda function ARN saved from before.
+3. Press `Actions > Create Method` and select `POST` as your method. Select `Lambda Function` as the integration type, tick on `Proxy Integration`, and copy your Lambda function ARN saved from before.
 
-![Create Method](./imgs/create_method.gif)
+    ![Create Method](./imgs/create_method.gif)
 
-Once created, go to `Settings` tab.
+4. Once created, go to `Settings` tab.
 
-![REST Settings](./imgs/rest_settings.png)
+    ![REST Settings](./imgs/rest_settings.png)
 
-Scroll all the way down. In `Binary Media Types` press on `Add Binary Media Type`, add `multipart/form-data` and press on `Save Changes`.
+5. Scroll all the way down. In `Binary Media Types` press on `Add Binary Media Type`, add `multipart/form-data` and press on `Save Changes`.
 
-![Rest Media Type](./imgs/rest_media_types.gif)
+    ![Rest Media Type](./imgs/rest_media_types.gif)
 
-Go back to `Resources` tab. Press on `Actions > Deploy API`. Set `[New Stage]` as the deployment stage, give it a stage name and press `Deploy`.
+6. Go back to `Resources` tab. Press on `Actions > Deploy API`. Set `[New Stage]` as the deployment stage, give it a stage name and press `Deploy`.
 
-![Deploy API](./imgs/deploy_api.gif)
+    ![Deploy API](./imgs/deploy_api.gif)
 
 You will be redirected to `Stages` and your API URL will be shown. Now we can test the Rest API.
 
@@ -109,17 +111,17 @@ You will be redirected to `Stages` and your API URL will be shown. Now we can te
 
 We will use [Postman](https://www.postman.com/downloads/) to send an audio file and get the transcription.
 
-Copy and paste the `invoke URL` from API Gateway in the request URL section and set the request type to `POST`.
+1. Copy and paste the `invoke URL` from API Gateway in the request URL section and set the request type to `POST`.
 
-![Postman URL](./imgs/postman_url.png)
+    ![Postman URL](./imgs/postman_url.png)
 
-In the `Body` tab, set the data type to `form-data`. Set the key name to `audio_file`, set the type as `File`, and press on `Select Files` and select the audio file you want to transcribe (Leopard supports the following audio formats: `FLAC`, `MP3`, `Ogg`, `Opus`, `Vorbis`, `WAV`, and `WebM`).
+2. In the `Body` tab, set the data type to `form-data`. Set the key name to `audio_file`, set the type as `File`, and press on `Select Files` and select the audio file you want to transcribe (Leopard supports the following audio formats: `FLAC`, `MP3`, `Ogg`, `Opus`, `Vorbis`, `WAV`, and `WebM`).
 
-![Request Body](./imgs/body_settings.gif)
+    ![Request Body](./imgs/body_settings.gif)
 
-Once the request goes through, the result will show below.
+3. Once the request goes through, the result will show below.
 
-![Transcription](./imgs/transcription.png)
+    ![Transcription](./imgs/transcription.png)
 
 In AWS Console, go to `CloudWatch > Log groups` if you would like more details on a specific API request and Lambda invocation.
 
