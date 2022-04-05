@@ -27,7 +27,7 @@ API Gateway has a 29-second timeout and 10MB payload size limit. Lambda has a 15
 
 ## High-Level Overview
 
-1. Download the zip file from [GitHub Repository](#add-link). Create a Lambda function and upload the zip.
+1. Download the zip file from [GitHub Repository](serverless_leopard.zip). Create a Lambda function and upload the zip.
 2. Update timeout and memory limit for your needs. Add the `ACCESS_KEY` environment variable with your from [Picovoice Console](https://console.picovoice.ai/)
 3. Create an API in API Gateway and give it a post method. Tick the `Proxy Integration` on and set your Lambda function ARN as well.
 4. Add `multipart/form-data` in `Settings > Binary Media Types`.
@@ -45,7 +45,7 @@ Press `Create a Function`. Then set the function name and set the runtime to Pyt
 
 ![Create Function](./imgs/create_function.gif)                                                        
 
-Download the zip file from the [GitHub repository](#add-link) which contains the Lambda handler ([source](#add-link)) and packaged [pvleopard module](#add-link). 
+Download the zip file from the [GitHub repository](serverless_leopard.zip) which contains the Lambda handler ([source](serverless_leopard/lambda_function.py)) and packaged [pvleopard module](https://pypi.org/project/pvleopard/). 
 
 The Lambda handler does the following:
    1. Gets and parses the form-data from the request.
