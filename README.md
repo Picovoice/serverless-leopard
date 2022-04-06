@@ -6,9 +6,9 @@ In this tutorial, we show how to set up your own serverless Speech-to-Text trans
 
 ## Pre-requisites
 
-Register for an [AWS](https://aws.amazon.com/account/) account. We will be using it to access AWS Lambda and API Gateway services either via the console or CLI.
+Register for an [AWS](https://aws.amazon.com/account/) account. We will be using it to access Amazon Lambda and API Gateway via the console.
 
-Sign up for [Picovoice Console](https://console.picovoice.ai/) using GitHub and to get your AccessKey for free. We will need an AccessKey to use Leopard Speech-to-Text engine.
+Sign up for [Picovoice Console](https://console.picovoice.ai/) to get your AccessKey for free. We will need an AccessKey to use Leopard Speech-to-Text engine.
 
 ## Estimated Cost
 
